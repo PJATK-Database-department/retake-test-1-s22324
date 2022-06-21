@@ -26,7 +26,7 @@ namespace Test_Retake1.Controllers
             {
                 return NotFound("Musician does not exist");
             }
-            if(!await _service.DoesArtistHaveTracksInAlbums(idMusician))
+            if(await _service.CanMusicianBeDeleted(idMusician))
             {
                 return BadRequest("Musician has songs that are in albums");
             }

@@ -60,6 +60,7 @@ namespace Test_Retake1.Services
                     result.PublishDate = DateTime.Parse(dr[1].ToString());
                     result.MusicLabel = await GetMusicLabelNameAsync(Int32.Parse(dr[2].ToString())); 
                 }
+                await con.CloseAsync();
                 return result;
             }
 
@@ -105,15 +106,17 @@ namespace Test_Retake1.Services
                         "DELETE FROM Musician WHERE IdMusician = " + idMusician, con, tran);
                     await cmd.ExecuteNonQueryAsync();
                     await tran.CommitAsync();
+                    await con.CloseAsync();
                 }
                 catch (Exception)
                 {
                     await tran.RollbackAsync();
+                    await con.CloseAsync();
                 }
             }
         }
 
-        public async Task<bool> DoesArtistHaveTracksInAlbums(int idMusician)
+        public async Task<bool> CanMusicianBeDeleted(int idMusician)
         {
             
             var tracks = new List<MusicianTrackDto>();
@@ -142,16 +145,19 @@ namespace Test_Retake1.Services
                 }
                 foreach(MusicianTrackDto track in tracks)
                 {
-                    if(track.IdMusicAlbum == null) // if this is true it means he can be deleted
-                        // if any of the tracks that are associated to music albums have music albums as null,
-                        // the artist can be removed, if there is not a single null album artist cannot be removed
+                    if(track.IdMusicAlbum != null) 
+                        // if any of the tracks that are associated to music albums have existing music albums,
+                        // the artist cant be removed, if there is not a single null album artist cannot be removed
                     {
-                        return true;
+                        return false;
                     }
                 }
                 await con.CloseAsync();
-                return false;
+                return true;
             }
+            //Musician can be deleted only if he is involved in creating songs that have not yet appeared in the target albums.
+            // So if he is involved in even a single song, that does have an album he cant be deleted.
+
 
             // check wether any of this musicians song has idmusicalbum = null
         }

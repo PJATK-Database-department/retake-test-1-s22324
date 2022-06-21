@@ -15,7 +15,7 @@ namespace Test_Retake1.Services
 
         Task<bool> DoesMusicianExistAsync(int idMusician);
 
-        Task<bool> DoesArtistHaveTracksInAlbums(int idMusician);
+        Task<bool> CanMusicianBeDeleted(int idMusician);
 
         Task DeleteMusicianAsync(int idMusician);
 
